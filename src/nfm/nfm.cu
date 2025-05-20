@@ -238,7 +238,7 @@ void NFM::ProjectAsync(cudaStream_t _stream)
 
     CalcDivAsync(*(amgpcg_.b_), tile_dim_, *(amgpcg_.poisson_vector_[0].is_dof_), *tmp_u_x_, *tmp_u_y_, *tmp_u_z_, _stream);
 
-    amgpcg_.SolveAsync(5, _stream);
+    amgpcg_.SolveAsync(6, _stream);
 
     ApplyPressureAsync(*tmp_u_x_, *tmp_u_y_, *tmp_u_z_, tile_dim_, *(amgpcg_.x_), *is_bc_x_, *is_bc_y_, *is_bc_z_, _stream);
 }
