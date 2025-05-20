@@ -23,7 +23,7 @@ We use xmake for cross-platform compilation. We successfully compiled the code o
 
 ### 1. Clone the repository
 ```
-git clone
+git clone https://github.com/yuchen-sun-cg/lfm.git
 ```
 ### 2. Update submodule (for Vulkan Renderer)
 ```
