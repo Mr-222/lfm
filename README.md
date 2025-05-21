@@ -1,7 +1,7 @@
 # Leapfrog Flow Maps for Real-Time Fluid Simulation
 This repository contains a High-Performance LFM fluid simulation and a Poisson solver written in CUDA. 
 
-Please consider citing Our paper if this repository helps you:
+Please consider citing our paper if this repository helps you:
 
 ```
 @article{sun2025lfm,
