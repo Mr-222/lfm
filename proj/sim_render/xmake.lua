@@ -10,7 +10,7 @@ add_requires("cuda", {system=true, configs={utils={"cublas","cusparse","cusolver
 add_requires("vtk 9.3.1")
 
 set_policy("build.intermediate_directory", false)
-
+set_runtimes("MD")
 target("sim_render")
     if is_plat("windows") then
         add_rules("plugin.vsxmake.autoupdate")
