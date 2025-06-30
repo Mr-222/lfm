@@ -2,8 +2,8 @@
 #include "function/resource_manager/resource_manager.h"
 #include "function/tool/fire_light_updater.h"
 #include "function/type/vertex.h"
-#include "nfm_init.h"
-#include "nfm_util.h"
+#include "lfm_init.h"
+#include "lfm_util.h"
 #include "physics.h"
 #include <cstdio>
 #include <glm/glm.hpp>
@@ -44,7 +44,7 @@ void PhysicsEngineUser::init(Configuration& config, GlobalContext* g_ctx)
     frame_rate      = driver_cfg.frame_rate;
     steps_per_frame = driver_cfg.steps_per_frame;
     current_frame   = 0;
-    lfm::InitNFMAsync(nfm, config.at("nfm"), streamToRun);
+    lfm::InitLFMAsync(lfm_, config.at("lfm"), streamToRun);
 }
 
 __global__ void writeToVorticity(cudaSurfaceObject_t surface_object, cudaExtent extent, size_t element_size,
@@ -62,22 +62,22 @@ __global__ void writeToVorticity(cudaSurfaceObject_t surface_object, cudaExtent 
 void PhysicsEngineUser::step()
 {
     waitOnSemaphore(vkUpdateSemaphore);
-    lfm::GetCenteralVecAsync(*(nfm.u_), nfm.tile_dim_, *(nfm.init_u_x_), *(nfm.init_u_y_), *(nfm.init_u_z_), streamToRun);
-    lfm::GetVorNormAsync(*(nfm.vor_norm_), nfm.tile_dim_, *(nfm.u_), nfm.dx_, streamToRun);
+    lfm::GetCenteralVecAsync(*(lfm_.u_), lfm_.tile_dim_, *(lfm_.init_u_x_), *(lfm_.init_u_y_), *(lfm_.init_u_z_), streamToRun);
+    lfm::GetVorNormAsync(*(lfm_.vor_norm_), lfm_.tile_dim_, *(lfm_.u_), lfm_.dx_, streamToRun);
     writeToVorticity<<<32 * 16 * 16, 512, 0, streamToRun>>>(
         extImages["vorticity"].surface_object,
         extImages["vorticity"].extent,
         extImages["vorticity"].element_size,
-        nfm.vor_norm_->dev_ptr_,
+        lfm_.vor_norm_->dev_ptr_,
         { 32, 16, 16 }, 3.0f);
     signalSemaphore(cuUpdateSemaphore);
 
     if (total_frame < 0 || current_frame < total_frame) {
-        float dt         = 1.0f / (frame_rate * nfm.reinit_every_);
-        nfm.inlet_angle_ = g_ctx->rm->inlet_angle;
-        for (int i = 0; i < nfm.reinit_every_; i++)
-            nfm.AdvanceAsync(dt, streamToRun);
-        nfm.ReinitAsync(dt, streamToRun);
+        float dt          = 1.0f / (frame_rate * lfm_.reinit_every_);
+        lfm_.inlet_angle_ = g_ctx->rm->inlet_angle;
+        for (int i = 0; i < lfm_.reinit_every_; i++)
+            lfm_.AdvanceAsync(dt, streamToRun);
+        lfm_.ReinitAsync(dt, streamToRun);
         current_frame++;
     }
 }

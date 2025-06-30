@@ -3,7 +3,7 @@
 #include "amgpcg.h"
 
 namespace lfm {
-class NFM {
+class LFM {
 public:
     // domain
     int3 tile_dim_;
@@ -79,8 +79,8 @@ public:
     // bfecc clamp
     bool use_bfecc_clamp_;
 
-    NFM() = default;
-    NFM(int3 _tile_dim, int _reinit_every, int _num_smoke);
+    LFM() = default;
+    LFM(int3 _tile_dim, int _reinit_every, int _num_smoke);
     void Alloc(int3 _tile_dim, int _reinit_every, int _num_smoke);
 
     void AdvanceAsync(float _dt, cudaStream_t _stream);

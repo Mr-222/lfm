@@ -1,11 +1,11 @@
 #pragma once
 
 #include "function/physics/cuda_engine.h"
-#include "nfm.h"
+#include "lfm.h"
 #include <glm/glm.hpp>
 
 class PhysicsEngineUser : public CudaEngine {
-    lfm::NFM nfm;
+    lfm::LFM lfm_;
     virtual void initExternalMem() override;
 
 public:

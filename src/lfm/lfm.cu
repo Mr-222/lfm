@@ -1,16 +1,16 @@
 #include "data_io.h"
-#include "nfm.h"
-#include "nfm_util.h"
+#include "lfm.h"
+#include "lfm_util.h"
 #include "timer.h"
 #include <cub/cub.cuh>
 
 namespace lfm {
-NFM::NFM(int3 _tile_dim, int _reinit_every, int _num_smoke)
+LFM::LFM(int3 _tile_dim, int _reinit_every, int _num_smoke)
 {
     Alloc(_tile_dim, _reinit_every, _num_smoke);
 }
 
-void NFM::Alloc(int3 _tile_dim, int _reinit_every, int _num_smoke)
+void LFM::Alloc(int3 _tile_dim, int _reinit_every, int _num_smoke)
 {
     tile_dim_     = _tile_dim;
     reinit_every_ = _reinit_every;
@@ -101,7 +101,7 @@ void NFM::Alloc(int3 _tile_dim, int _reinit_every, int _num_smoke)
     }
 }
 
-void NFM::AdvanceAsync(float _dt, cudaStream_t _stream)
+void LFM::AdvanceAsync(float _dt, cudaStream_t _stream)
 {
     float mid_dt;
     std::shared_ptr<DHMemory<float>> last_proj_u_x;
@@ -148,7 +148,7 @@ void NFM::AdvanceAsync(float _dt, cudaStream_t _stream)
     step_++;
 }
 
-void NFM::ReinitAsync(float _dt, cudaStream_t _stream)
+void LFM::ReinitAsync(float _dt, cudaStream_t _stream)
 {
     int3 x_tile_dim = { tile_dim_.x + 1, tile_dim_.y, tile_dim_.z };
     int3 y_tile_dim = { tile_dim_.x, tile_dim_.y + 1, tile_dim_.z };
@@ -206,7 +206,7 @@ void NFM::ReinitAsync(float _dt, cudaStream_t _stream)
     }
 }
 
-void NFM::ResetForwardFlowMapAsync(cudaStream_t _stream)
+void LFM::ResetForwardFlowMapAsync(cudaStream_t _stream)
 {
     int3 x_tile_dim = { tile_dim_.x + 1, tile_dim_.y, tile_dim_.z };
     int3 y_tile_dim = { tile_dim_.x, tile_dim_.y + 1, tile_dim_.z };
@@ -216,7 +216,7 @@ void NFM::ResetForwardFlowMapAsync(cudaStream_t _stream)
     ResetToIdentityZASync(*phi_z_, *F_z_, z_tile_dim, grid_origin_, dx_, _stream);
 }
 
-void NFM::ResetBackwardFlowMapAsync(cudaStream_t _stream)
+void LFM::ResetBackwardFlowMapAsync(cudaStream_t _stream)
 {
     int3 x_tile_dim = { tile_dim_.x + 1, tile_dim_.y, tile_dim_.z };
     int3 y_tile_dim = { tile_dim_.x, tile_dim_.y + 1, tile_dim_.z };
@@ -226,7 +226,7 @@ void NFM::ResetBackwardFlowMapAsync(cudaStream_t _stream)
     ResetToIdentityZASync(*psi_z_, *T_z_, z_tile_dim, grid_origin_, dx_, _stream);
 }
 
-void NFM::ProjectAsync(cudaStream_t _stream)
+void LFM::ProjectAsync(cudaStream_t _stream)
 {
     int3 x_tile_dim = { tile_dim_.x + 1, tile_dim_.y, tile_dim_.z };
     int3 y_tile_dim = { tile_dim_.x, tile_dim_.y + 1, tile_dim_.z };
