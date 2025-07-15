@@ -1,5 +1,5 @@
 # Leapfrog Flow Maps for Real-Time Fluid Simulation
-This repository contains a High-Performance LFM fluid simulation and a Poisson solver written in CUDA. 
+This repository contains a High-Performance LFM fluid simulation. The code for AMGPCG Poisson Solver is in another repo [AMGPCG_Pybind_Torch](https://github.com/wrc042/AMGPCG_Pybind_Torch), which is imported as a submodule.
 
 Please consider citing our paper if this repository helps you:
 
@@ -25,7 +25,7 @@ We use xmake for cross-platform compilation. We successfully compiled the code o
 ```
 git clone https://github.com/yuchen-sun-cg/lfm.git
 ```
-### 2. Update submodule (for Vulkan Renderer)
+### 2. Update submodule (for Vulkan Renderer and AMPCG Poisson Solver)
 ```
 git submodule update --init --recursive
 ```

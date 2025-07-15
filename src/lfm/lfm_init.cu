@@ -57,6 +57,8 @@ void InitLFMAsync(LFM& _lfm, const LFMConfiguration& _config, cudaStream_t _stre
         SetCoefByIsBcAsync(*(_lfm.amgpcg_.poisson_vector_[0].is_dof_), *(_lfm.amgpcg_.poisson_vector_[0].a_diag_), *(_lfm.amgpcg_.poisson_vector_[0].a_x_), *(_lfm.amgpcg_.poisson_vector_[0].a_y_),
                            *(_lfm.amgpcg_.poisson_vector_[0].a_z_), tile_dim, *_lfm.is_bc_x_, *_lfm.is_bc_y_, *_lfm.is_bc_z_, _stream);
         _lfm.amgpcg_.BuildAsync(6.0f, -1.0f, _stream);
+        _lfm.amgpcg_.solve_by_tol_ = false;
+        _lfm.amgpcg_.max_iter_ = 6;
     }
 
     // smoke

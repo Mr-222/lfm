@@ -806,7 +806,7 @@ void AddFieldsAsync(DHMemory<float>& _dst, int3 _tile_dim, DHMemory<float>& _src
     AddFieldsKernel<<<tile_num, 128, 0, _stream>>>(_dst.dev_ptr_, _src1.dev_ptr_, _src2.dev_ptr_, _coef2);
 }
 
-__global__ void SetBcAxisKernel(float* _u_axis, int3 _axis_tile_dim, const char* _is_bc_axis, const float* _bc_val_axis)
+__global__ void SetBcAxisKernel(float* _u_axis, int3 _axis_tile_dim, const uint8_t* _is_bc_axis, const float* _bc_val_axis)
 {
     int tile_idx  = blockIdx.x;
     int3 tile_ijk = TileIdxToIjk(_axis_tile_dim, tile_idx);
@@ -820,16 +820,16 @@ __global__ void SetBcAxisKernel(float* _u_axis, int3 _axis_tile_dim, const char*
     }
 }
 
-void SetBcAxisAsync(DHMemory<float>& _u_axis, int3 _axis_tile_dim, const DHMemory<char>& _is_bc_axis, const DHMemory<float>& _bc_val_axis, cudaStream_t _stream)
+void SetBcAxisAsync(DHMemory<float>& _u_axis, int3 _axis_tile_dim, const DHMemory<uint8_t>& _is_bc_axis, const DHMemory<float>& _bc_val_axis, cudaStream_t _stream)
 {
     float* u_axis            = _u_axis.dev_ptr_;
-    const char* is_bc_axis   = _is_bc_axis.dev_ptr_;
+    const uint8_t* is_bc_axis   = _is_bc_axis.dev_ptr_;
     const float* bc_val_axis = _bc_val_axis.dev_ptr_;
     int axis_tile_num        = Prod(_axis_tile_dim);
     SetBcAxisKernel<<<axis_tile_num, 128, 0, _stream>>>(u_axis, _axis_tile_dim, is_bc_axis, bc_val_axis);
 }
 
-__global__ void CalcDivKernel(float* _b, int3 _tile_dim, const char* _is_dof, const float* _u_x, const float* _u_y, const float* _u_z)
+__global__ void CalcDivKernel(float* _b, int3 _tile_dim, const uint8_t* _is_dof, const float* _u_x, const float* _u_y, const float* _u_z)
 {
     int tile_idx    = blockIdx.x;
     int3 tile_ijk   = TileIdxToIjk(_tile_dim, tile_idx);
@@ -859,10 +859,10 @@ __global__ void CalcDivKernel(float* _b, int3 _tile_dim, const char* _is_dof, co
     }
 }
 
-void CalcDivAsync(DHMemory<float>& _b, int3 _tile_dim, const DHMemory<char>& _is_dof, const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z, cudaStream_t _stream)
+void CalcDivAsync(DHMemory<float>& _b, int3 _tile_dim, const DHMemory<uint8_t>& _is_dof, const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z, cudaStream_t _stream)
 {
     float* b           = _b.dev_ptr_;
-    const char* is_dof = _is_dof.dev_ptr_;
+    const uint8_t* is_dof = _is_dof.dev_ptr_;
     const float* u_x   = _u_x.dev_ptr_;
     const float* u_y   = _u_y.dev_ptr_;
     const float* u_z   = _u_z.dev_ptr_;
@@ -870,7 +870,7 @@ void CalcDivAsync(DHMemory<float>& _b, int3 _tile_dim, const DHMemory<char>& _is
     CalcDivKernel<<<tile_num, 128, 0, _stream>>>(b, _tile_dim, is_dof, u_x, u_y, u_z);
 }
 
-__global__ void ApplyPressureXKernel(float* _u_x, int3 _tile_dim, const float* _p, const char* _is_bc_x)
+__global__ void ApplyPressureXKernel(float* _u_x, int3 _tile_dim, const float* _p, const uint8_t* _is_bc_x)
 {
     int b_id        = blockIdx.x;
     int3 x_tile_dim = { _tile_dim.x + 1, _tile_dim.y, _tile_dim.z };
@@ -899,7 +899,7 @@ __global__ void ApplyPressureXKernel(float* _u_x, int3 _tile_dim, const float* _
     }
 }
 
-__global__ void ApplyPressureYKernel(float* _u_y, int3 _tile_dim, const float* _p, const char* _is_bc_y)
+__global__ void ApplyPressureYKernel(float* _u_y, int3 _tile_dim, const float* _p, const uint8_t* _is_bc_y)
 {
     int b_id        = blockIdx.x;
     int3 y_tile_dim = { _tile_dim.x, _tile_dim.y + 1, _tile_dim.z };
@@ -928,7 +928,7 @@ __global__ void ApplyPressureYKernel(float* _u_y, int3 _tile_dim, const float* _
     }
 }
 
-__global__ void ApplyPressureZKernel(float* _u_z, int3 _tile_dim, const float* _p, const char* _is_bc_z)
+__global__ void ApplyPressureZKernel(float* _u_z, int3 _tile_dim, const float* _p, const uint8_t* _is_bc_z)
 {
     int b_id        = blockIdx.x;
     int3 z_tile_dim = { _tile_dim.x, _tile_dim.y, _tile_dim.z + 1 };
@@ -957,7 +957,7 @@ __global__ void ApplyPressureZKernel(float* _u_z, int3 _tile_dim, const float* _
     }
 }
 
-void ApplyPressureAsync(DHMemory<float>& _u_x, DHMemory<float>& _u_y, DHMemory<float>& _u_z, int3 _tile_dim, const DHMemory<float>& _p, const DHMemory<char>& _is_bc_x, const DHMemory<char>& _is_bc_y, const DHMemory<char>& _is_bc_z, cudaStream_t _stream)
+void ApplyPressureAsync(DHMemory<float>& _u_x, DHMemory<float>& _u_y, DHMemory<float>& _u_z, int3 _tile_dim, const DHMemory<float>& _p, const DHMemory<uint8_t>& _is_bc_x, const DHMemory<uint8_t>& _is_bc_y, const DHMemory<uint8_t>& _is_bc_z, cudaStream_t _stream)
 {
     int3 x_tile_dim     = { _tile_dim.x + 1, _tile_dim.y, _tile_dim.z };
     int3 y_tile_dim     = { _tile_dim.x, _tile_dim.y + 1, _tile_dim.z };
@@ -969,15 +969,15 @@ void ApplyPressureAsync(DHMemory<float>& _u_x, DHMemory<float>& _u_y, DHMemory<f
     float* u_y          = _u_y.dev_ptr_;
     float* u_z          = _u_z.dev_ptr_;
     const float* p      = _p.dev_ptr_;
-    const char* is_bc_x = _is_bc_x.dev_ptr_;
-    const char* is_bc_y = _is_bc_y.dev_ptr_;
-    const char* is_bc_z = _is_bc_z.dev_ptr_;
+    const uint8_t* is_bc_x = _is_bc_x.dev_ptr_;
+    const uint8_t* is_bc_y = _is_bc_y.dev_ptr_;
+    const uint8_t* is_bc_z = _is_bc_z.dev_ptr_;
     ApplyPressureXKernel<<<x_tile_num, 128, 0, _stream>>>(u_x, _tile_dim, p, is_bc_x);
     ApplyPressureYKernel<<<y_tile_num, 128, 0, _stream>>>(u_y, _tile_dim, p, is_bc_y);
     ApplyPressureZKernel<<<z_tile_num, 128, 0, _stream>>>(u_z, _tile_dim, p, is_bc_z);
 }
 
-__global__ void SetWallBcXKernel(char* _is_bc_x, float* _bc_val_x, int3 _x_tile_dim, float _neg_bc_val_x, float _pos_bc_val_x)
+__global__ void SetWallBcXKernel(uint8_t* _is_bc_x, float* _bc_val_x, int3 _x_tile_dim, float _neg_bc_val_x, float _pos_bc_val_x)
 {
     int tile_idx  = blockIdx.x;
     int3 tile_ijk = TileIdxToIjk(_x_tile_dim, tile_idx);
@@ -999,7 +999,7 @@ __global__ void SetWallBcXKernel(char* _is_bc_x, float* _bc_val_x, int3 _x_tile_
     }
 }
 
-__global__ void SetWallBcYKernel(char* _is_bc_y, float* _bc_val_y, int3 _y_tile_dim, float _neg_bc_val_y, float _pos_bc_val_y)
+__global__ void SetWallBcYKernel(uint8_t* _is_bc_y, float* _bc_val_y, int3 _y_tile_dim, float _neg_bc_val_y, float _pos_bc_val_y)
 {
     int tile_idx  = blockIdx.x;
     int3 tile_ijk = TileIdxToIjk(_y_tile_dim, tile_idx);
@@ -1021,7 +1021,7 @@ __global__ void SetWallBcYKernel(char* _is_bc_y, float* _bc_val_y, int3 _y_tile_
     }
 }
 
-__global__ void SetWallBcZKernel(char* _is_bc_z, float* _bc_val_z, int3 _z_tile_dim, float _neg_bc_val_z, float _pos_bc_val_z)
+__global__ void SetWallBcZKernel(uint8_t* _is_bc_z, float* _bc_val_z, int3 _z_tile_dim, float _neg_bc_val_z, float _pos_bc_val_z)
 {
     int tile_idx  = blockIdx.x;
     int3 tile_ijk = TileIdxToIjk(_z_tile_dim, tile_idx);
@@ -1043,15 +1043,15 @@ __global__ void SetWallBcZKernel(char* _is_bc_z, float* _bc_val_z, int3 _z_tile_
     }
 }
 
-void SetWallBcAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemory<char>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim,
+void SetWallBcAsync(DHMemory<uint8_t>& _is_bc_x, DHMemory<uint8_t>& _is_bc_y, DHMemory<uint8_t>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim,
                     float3 _neg_bc_val, float3 _pos_bc_val, cudaStream_t _stream)
 {
     int3 x_tile_dim = { _tile_dim.x + 1, _tile_dim.y, _tile_dim.z };
     int3 y_tile_dim = { _tile_dim.x, _tile_dim.y + 1, _tile_dim.z };
     int3 z_tile_dim = { _tile_dim.x, _tile_dim.y, _tile_dim.z + 1 };
-    char* is_bc_x   = _is_bc_x.dev_ptr_;
-    char* is_bc_y   = _is_bc_y.dev_ptr_;
-    char* is_bc_z   = _is_bc_z.dev_ptr_;
+    uint8_t* is_bc_x   = _is_bc_x.dev_ptr_;
+    uint8_t* is_bc_y   = _is_bc_y.dev_ptr_;
+    uint8_t* is_bc_z   = _is_bc_z.dev_ptr_;
     float* bc_val_x = _bc_val_x.dev_ptr_;
     float* bc_val_y = _bc_val_y.dev_ptr_;
     float* bc_val_z = _bc_val_z.dev_ptr_;
@@ -1060,7 +1060,7 @@ void SetWallBcAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemory
     SetWallBcZKernel<<<Prod(z_tile_dim), 128, 0, _stream>>>(is_bc_z, bc_val_z, z_tile_dim, _neg_bc_val.z, _pos_bc_val.z);
 }
 
-__global__ void SetBcByPhiKernel(char* _is_bc_x, char* _is_bc_y, char* _is_bc_z, float* _bc_val_x, float* _bc_val_y, float* _bc_val_z, int3 _tile_dim, const float* _phi)
+__global__ void SetBcByPhiKernel(uint8_t* _is_bc_x, uint8_t* _is_bc_y, uint8_t* _is_bc_z, float* _bc_val_x, float* _bc_val_y, float* _bc_val_z, int3 _tile_dim, const float* _phi)
 {
     int tile_idx    = blockIdx.x;
     int3 tile_ijk   = TileIdxToIjk(_tile_dim, tile_idx);
@@ -1090,11 +1090,11 @@ __global__ void SetBcByPhiKernel(char* _is_bc_x, char* _is_bc_y, char* _is_bc_z,
     }
 }
 
-void SetBcByPhiAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemory<char>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim, const DHMemory<float>& _phi, cudaStream_t _stream)
+void SetBcByPhiAsync(DHMemory<uint8_t>& _is_bc_x, DHMemory<uint8_t>& _is_bc_y, DHMemory<uint8_t>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim, const DHMemory<float>& _phi, cudaStream_t _stream)
 {
-    char* is_bc_x    = _is_bc_x.dev_ptr_;
-    char* is_bc_y    = _is_bc_y.dev_ptr_;
-    char* is_bc_z    = _is_bc_z.dev_ptr_;
+    uint8_t* is_bc_x    = _is_bc_x.dev_ptr_;
+    uint8_t* is_bc_y    = _is_bc_y.dev_ptr_;
+    uint8_t* is_bc_z    = _is_bc_z.dev_ptr_;
     float* bc_val_x  = _bc_val_x.dev_ptr_;
     float* bc_val_y  = _bc_val_y.dev_ptr_;
     float* bc_val_z  = _bc_val_z.dev_ptr_;
@@ -1102,7 +1102,7 @@ void SetBcByPhiAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemor
     SetBcByPhiKernel<<<Prod(_tile_dim), 128, 0, _stream>>>(is_bc_x, is_bc_y, is_bc_z, bc_val_x, bc_val_y, bc_val_z, _tile_dim, phi);
 }
 
-__global__ void SetCoefByIsBcKernel(char* _is_dof, float* _a_diag, float* _a_x, float* _a_y, float* _a_z, int3 _tile_dim, const char* _is_bc_x, const char* _is_bc_y, const char* _is_bc_z)
+__global__ void SetCoefByIsBcKernel(uint8_t* _is_dof, float* _a_diag, float* _a_x, float* _a_y, float* _a_z, int3 _tile_dim, const uint8_t* _is_bc_x, const uint8_t* _is_bc_y, const uint8_t* _is_bc_z)
 {
     int3 x_tile_dim = { _tile_dim.x + 1, _tile_dim.y, _tile_dim.z };
     int3 y_tile_dim = { _tile_dim.x, _tile_dim.y + 1, _tile_dim.z };
@@ -1152,16 +1152,16 @@ __global__ void SetCoefByIsBcKernel(char* _is_dof, float* _a_diag, float* _a_x, 
     }
 }
 
-void SetCoefByIsBcAsync(DHMemory<char>& _is_dof, DHMemory<float>& _a_diag, DHMemory<float>& _a_x, DHMemory<float>& _a_y, DHMemory<float>& _a_z, int3 _tile_dim, const DHMemory<char>& _is_bc_x, const DHMemory<char>& _is_bc_y, const DHMemory<char>& _is_bc_z, cudaStream_t _stream)
+void SetCoefByIsBcAsync(DHMemory<uint8_t>& _is_dof, DHMemory<float>& _a_diag, DHMemory<float>& _a_x, DHMemory<float>& _a_y, DHMemory<float>& _a_z, int3 _tile_dim, const DHMemory<uint8_t>& _is_bc_x, const DHMemory<uint8_t>& _is_bc_y, const DHMemory<uint8_t>& _is_bc_z, cudaStream_t _stream)
 {
-    char* is_dof        = _is_dof.dev_ptr_;
+    uint8_t* is_dof        = _is_dof.dev_ptr_;
     float* a_diag       = _a_diag.dev_ptr_;
     float* a_x          = _a_x.dev_ptr_;
     float* a_y          = _a_y.dev_ptr_;
     float* a_z          = _a_z.dev_ptr_;
-    const char* is_bc_x = _is_bc_x.dev_ptr_;
-    const char* is_bc_y = _is_bc_y.dev_ptr_;
-    const char* is_bc_z = _is_bc_z.dev_ptr_;
+    const uint8_t* is_bc_x = _is_bc_x.dev_ptr_;
+    const uint8_t* is_bc_y = _is_bc_y.dev_ptr_;
+    const uint8_t* is_bc_z = _is_bc_z.dev_ptr_;
     int tile_num        = Prod(_tile_dim);
     SetCoefByIsBcKernel<<<tile_num, 128, 0, _stream>>>(is_dof, a_diag, a_x, a_y, a_z, _tile_dim, is_bc_x, is_bc_y, is_bc_z);
 }

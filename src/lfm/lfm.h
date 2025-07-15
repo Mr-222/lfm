@@ -18,9 +18,9 @@ public:
     // boundary
     float inlet_norm_;
     float inlet_angle_;
-    std::shared_ptr<DHMemory<char>> is_bc_x_;
-    std::shared_ptr<DHMemory<char>> is_bc_y_;
-    std::shared_ptr<DHMemory<char>> is_bc_z_;
+    std::shared_ptr<DHMemory<uint8_t>> is_bc_x_;
+    std::shared_ptr<DHMemory<uint8_t>> is_bc_y_;
+    std::shared_ptr<DHMemory<uint8_t>> is_bc_z_;
     std::shared_ptr<DHMemory<float>> bc_val_x_;
     std::shared_ptr<DHMemory<float>> bc_val_y_;
     std::shared_ptr<DHMemory<float>> bc_val_z_;

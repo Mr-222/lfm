@@ -30,18 +30,18 @@ void BfeccClampAsync(DHMemory<float>& _after_bfecc, int3 _tile_dim, int3 _max_ij
 void RKAxisAccumulateForceAsync(int _rk_order, DHMemory<float3>& _psi_axis, DHMemory<float3>& _T_axis, DHMemory<float>& _f_axis, int3 _tile_dim, int3 _axis_tile_dim,
                                 const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z, const DHMemory<float>& _f_x, const DHMemory<float>& _f_y, const DHMemory<float>& _f_z, float3 _grid_origin, float _dx, float _dt, cudaStream_t _stream);
 
-void SetBcAxisAsync(DHMemory<float>& _u_axis, int3 _axis_tile_dim, const DHMemory<char>& _is_bc_axis, const DHMemory<float>& _bc_val_axis, cudaStream_t _stream);
+void SetBcAxisAsync(DHMemory<float>& _u_axis, int3 _axis_tile_dim, const DHMemory<uint8_t>& _is_bc_axis, const DHMemory<float>& _bc_val_axis, cudaStream_t _stream);
 
-void CalcDivAsync(DHMemory<float>& _b, int3 _tile_dim, const DHMemory<char>& _is_dof, const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z, cudaStream_t _stream);
+void CalcDivAsync(DHMemory<float>& _b, int3 _tile_dim, const DHMemory<uint8_t>& _is_dof, const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z, cudaStream_t _stream);
 
-void ApplyPressureAsync(DHMemory<float>& _u_x, DHMemory<float>& _u_y, DHMemory<float>& _u_z, int3 _tile_dim, const DHMemory<float>& _p, const DHMemory<char>& _is_bc_x, const DHMemory<char>& _is_bc_y, const DHMemory<char>& _is_bc_z, cudaStream_t _stream);
+void ApplyPressureAsync(DHMemory<float>& _u_x, DHMemory<float>& _u_y, DHMemory<float>& _u_z, int3 _tile_dim, const DHMemory<float>& _p, const DHMemory<uint8_t>& _is_bc_x, const DHMemory<uint8_t>& _is_bc_y, const DHMemory<uint8_t>& _is_bc_z, cudaStream_t _stream);
 
-void SetWallBcAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemory<char>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim,
+void SetWallBcAsync(DHMemory<uint8_t>& _is_bc_x, DHMemory<uint8_t>& _is_bc_y, DHMemory<uint8_t>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim,
                     float3 _neg_bc_val, float3 _pos_bc_val, cudaStream_t _stream);
 
-void SetBcByPhiAsync(DHMemory<char>& _is_bc_x, DHMemory<char>& _is_bc_y, DHMemory<char>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim, const DHMemory<float>& _phi, cudaStream_t _stream);
+void SetBcByPhiAsync(DHMemory<uint8_t>& _is_bc_x, DHMemory<uint8_t>& _is_bc_y, DHMemory<uint8_t>& _is_bc_z, DHMemory<float>& _bc_val_x, DHMemory<float>& _bc_val_y, DHMemory<float>& _bc_val_z, int3 _tile_dim, const DHMemory<float>& _phi, cudaStream_t _stream);
 
-void SetCoefByIsBcAsync(DHMemory<char>& _is_dof, DHMemory<float>& _a_diag, DHMemory<float>& _a_x, DHMemory<float>& _a_y, DHMemory<float>& _a_z, int3 _tile_dim, const DHMemory<char>& _is_bc_x, const DHMemory<char>& _is_bc_y, const DHMemory<char>& _is_bc_z, cudaStream_t _stream);
+void SetCoefByIsBcAsync(DHMemory<uint8_t>& _is_dof, DHMemory<float>& _a_diag, DHMemory<float>& _a_x, DHMemory<float>& _a_y, DHMemory<float>& _a_z, int3 _tile_dim, const DHMemory<uint8_t>& _is_bc_x, const DHMemory<uint8_t>& _is_bc_y, const DHMemory<uint8_t>& _is_bc_z, cudaStream_t _stream);
 
 void AdvectN2XAsync(DHMemory<float>& _dst, int3 _tile_dim, const DHMemory<float>& _src, const DHMemory<float>& _u_x, const DHMemory<float>& _u_y, const DHMemory<float>& _u_z,
                     float _dx, float _dt, cudaStream_t _stream);

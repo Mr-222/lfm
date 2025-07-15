@@ -1,6 +1,6 @@
 add_rules("mode.release", "mode.debug")
-includes("../common/xmake.lua")
-includes("../solver/xmake.lua")
+includes("../AMGPCG_Pybind_Torch/common/xmake.lua")
+includes("../AMGPCG_Pybind_Torch/solver/xmake.lua")
 includes("../engine/xmake.lua")
 target("lfm")
     add_rules("plugin.vsxmake.autoupdate")

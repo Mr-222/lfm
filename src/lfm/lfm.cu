@@ -24,9 +24,9 @@ void LFM::Alloc(int3 _tile_dim, int _reinit_every, int _num_smoke)
     int z_voxel_num = Prod(z_tile_dim) * 512;
 
     // boundary
-    is_bc_x_  = std::make_shared<DHMemory<char>>(x_voxel_num);
-    is_bc_y_  = std::make_shared<DHMemory<char>>(y_voxel_num);
-    is_bc_z_  = std::make_shared<DHMemory<char>>(z_voxel_num);
+    is_bc_x_  = std::make_shared<DHMemory<uint8_t>>(x_voxel_num);
+    is_bc_y_  = std::make_shared<DHMemory<uint8_t>>(y_voxel_num);
+    is_bc_z_  = std::make_shared<DHMemory<uint8_t>>(z_voxel_num);
     bc_val_x_ = std::make_shared<DHMemory<float>>(x_voxel_num);
     bc_val_y_ = std::make_shared<DHMemory<float>>(y_voxel_num);
     bc_val_z_ = std::make_shared<DHMemory<float>>(z_voxel_num);
@@ -238,7 +238,7 @@ void LFM::ProjectAsync(cudaStream_t _stream)
 
     CalcDivAsync(*(amgpcg_.b_), tile_dim_, *(amgpcg_.poisson_vector_[0].is_dof_), *tmp_u_x_, *tmp_u_y_, *tmp_u_z_, _stream);
 
-    amgpcg_.SolveAsync(6, _stream);
+    amgpcg_.SolveAsync(_stream);
 
     ApplyPressureAsync(*tmp_u_x_, *tmp_u_y_, *tmp_u_z_, tile_dim_, *(amgpcg_.x_), *is_bc_x_, *is_bc_y_, *is_bc_z_, _stream);
 }
