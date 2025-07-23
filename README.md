@@ -1,5 +1,5 @@
 # Leapfrog Flow Maps for Real-Time Fluid Simulation
-This repository contains a High-Performance LFM fluid simulation. The code for AMGPCG Poisson Solver is in another repo [AMGPCG_Pybind_Torch](https://github.com/wrc042/AMGPCG_Pybind_Torch), which is imported as a submodule.
+This repository contains a High-Performance LFM fluid simulator. The code for AMGPCG Poisson Solver is in another repo [AMGPCG_Pybind_Torch](https://github.com/wrc042/AMGPCG_Pybind_Torch), which is imported as a submodule.
 
 Please consider citing our paper if this repository helps you:
 
