@@ -1,6 +1,6 @@
 add_rules("mode.release", "mode.debug")
 
-target("sim_render")
+target("voxelization")
     set_targetdir("build")
 
     if is_plat("windows") then

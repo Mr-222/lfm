@@ -1,4 +1,6 @@
 *.xmake/
 *.vscode/
+*.idea/
 build/
 logs/
+compile_commands.json
